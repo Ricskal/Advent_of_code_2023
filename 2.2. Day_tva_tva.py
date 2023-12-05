@@ -20,6 +20,7 @@
 #
 # Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 #
+# Part 2
 # As you continue your walk, the Elf poses a second question: in each game you played, what is the fewest number of cubes of each color that could have been in the bag to make the game possible?
 #
 # Again consider the example games from earlier:
@@ -30,23 +31,20 @@
 # Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 # Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 #
-#     In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes. If any color had even one fewer cube, the game would have been impossible.
-#     Game 2 could have been played with a minimum of 1 red, 3 green, and 4 blue cubes.
-#     Game 3 must have been played with at least 20 red, 13 green, and 6 blue cubes.
-#     Game 4 required at least 14 red, 3 green, and 15 blue cubes.
-#     Game 5 needed no fewer than 6 red, 3 green, and 2 blue cubes in the bag.
+# In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes. If any color had even one fewer cube, the game would have been impossible.
+# Game 2 could have been played with a minimum of 1 red, 3 green, and 4 blue cubes.
+# Game 3 must have been played with at least 20 red, 13 green, and 6 blue cubes.
+# Game 4 required at least 14 red, 3 green, and 15 blue cubes.
+# Game 5 needed no fewer than 6 red, 3 green, and 2 blue cubes in the bag.
 #
 # The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together. The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively. Adding up these five powers produces the sum 2286.
 #
 # For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
 
-
 answer = 0
 red_dice = 0
 green_dice = 0
 blue_dice = 0
-set_possible = []
-
 file = open('Inputs/Day_2_input', 'r')
 line_list = file.readlines()
 
@@ -63,40 +61,21 @@ for line in line_list:
 
         for z in y:
             w = z.strip()
+            number = int(w[0:2])
             if w.find('red') != -1:
-                red_dice += int(w[0:2])
+                if number > red_dice:
+                    red_dice = number
             elif w.find('green') != -1:
-                green_dice += int(w[0:2])
+                if number > green_dice:
+                    green_dice = number
             elif w.find('blue') != -1:
-                blue_dice += int(w[0:2])
+                if number > blue_dice:
+                    blue_dice = number
 
-        if red_dice <= 12 and green_dice <= 13 and blue_dice <= 14:
-            print(f'The set {y} from game {game_number} is possible')
-            set_possible.append(True)
-        else:
-            print(f'The set {y} from game {game_number} is NOT possible')
-            set_possible.append(False)
-
-        red_dice = 0
-        green_dice = 0
-        blue_dice = 0
-
-    game_possible = False
-    for possibilities in set_possible:
-        if possibilities:
-            game_possible = True
-        else:
-            game_possible = False
-            break
-
-    if game_possible:
-        print(f'The answer was {answer}, game {game_number} is possible and will be added. New answer {answer + game_number}')
-        answer += game_number
-    else:
-        print(f'The answer was {answer}, game {game_number} is NOT possible and will NOT be added. The answer remains {answer}')
+    print(f'The answer was {answer}. Red = {red_dice} X green = {green_dice} X blue = {blue_dice} will be added as {red_dice * green_dice * blue_dice}')
+    answer += red_dice * green_dice * blue_dice
 
     print()
-    set_possible.clear()
     red_dice = 0
     green_dice = 0
     blue_dice = 0
