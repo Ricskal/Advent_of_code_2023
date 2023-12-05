@@ -20,13 +20,14 @@
 # Of course, the actual engine schematic is much larger. What is the sum of all of the part numbers in the engine schematic?
 
 answer = 0
+answer_dict = {}
 engine_2d_list = []
-
-file = open('Inputs/Day_3_test_input', 'r')
+file = open('Inputs/Day_3_input', 'r')
 line_list = file.readlines()
 y = 0
 x_axis_list = list('&')
-coord_list = list()
+coord_list_chars = list()
+coord_dict_numbers = {}
 
 # Add X and Y axis
 for line in line_list:
@@ -47,28 +48,88 @@ for line in engine_2d_list:
 for line in engine_2d_list:
     y_axis = line[0]
     x_axis = -1
-    if y_axis == '&':  # skip header
+    if y_axis == '&':  # skip x-axis
         continue
     for char in line:
         if not char.isdigit() and char != '.':
-            coord = str(x_axis) + ',' + y_axis
-            coord_list.append(coord)
+            coord_chars = str(x_axis) + ',' + y_axis
+            coord_list_chars.append(coord_chars)
             # print(f'Found special char = {char} on X= {x_axis} Y= {y_axis}')
         x_axis += 1
-print(f'Coordinate list = {coord_list}')
+print(f'Coordinate list special characters X,Y = {coord_list_chars}')
 
-for coord in coord_list:
-    x_coord = int(coord[0]) + 1
-    y_coord = int(coord[2]) + 1
-    print(f'Search around {engine_2d_list[y_coord][x_coord]} at X= {x_coord} and Y= {y_coord}')
-    left_top_corner = engine_2d_list[y_coord - 1][x_coord - 1]
-    top_mid = engine_2d_list[y_coord - 1][x_coord]
-    right_top_corner = engine_2d_list[y_coord + 1][x_coord + 1]
-    right = engine_2d_list[y_coord][x_coord + 1]
-    right_bottom_corner = engine_2d_list[y_coord + 1][x_coord + 1]
-    bottem_mid = engine_2d_list[y_coord + 1][x_coord]
-    left_bottem_corner = engine_2d_list[y_coord + 1][x_coord - 1]
-    left = engine_2d_list[y_coord][x_coord - 1]
+# Find all numbers and note coordinates
+digit = ''
+coord_numbers = ''
+y_axis_skipped = False
+number_started = False
+for line in engine_2d_list:
+    y_axis = line[0]
+    x_axis = 0
+    if y_axis == '&':  # skip x-axis
+        continue
+    for char in line:
+        if char == y_axis and not y_axis_skipped:  # skip y-axis
+            y_axis_skipped = True
+            continue
+        if char.isdigit():
+            digit = digit + char
+            coord_numbers = coord_numbers + str(x_axis) + ',' + y_axis + '|'
+            number_started = True
+        elif not char.isdigit() and number_started:
+            coord_dict_numbers[coord_numbers[:-1]] = digit
+            number_started = False
+            digit = ''
+            coord_numbers = ''
+        x_axis += 1
+    if number_started:
+        coord_dict_numbers[coord_numbers[:-1]] = digit
+        number_started = False
+        digit = ''
+        coord_numbers = ''
+    digit = ''
+    coord_numbers = ''
+    y_axis_skipped = False
+    number_started = False
+print(f'Coordinate list numbers X,Y = {coord_dict_numbers}')
+
+for coord_char in coord_list_chars:
+    coord_char_list = coord_char.split(',')
+    x_coord = int(coord_char_list[0])
+    y_coord = int(coord_char_list[1])
+    print(f'Search around {engine_2d_list[y_coord + 1][x_coord + 1]} at X= {x_coord} and Y= {y_coord}')
+    left_top_corner = str(x_coord - 1) + ',' + str(y_coord - 1)
+    top_mid = str(x_coord) + ',' + str(y_coord - 1)
+    right_top_corner = str(x_coord + 1) + ',' + str(y_coord - 1)
+    right = str(x_coord + 1) + ',' + str(y_coord)
+    right_bottom_corner = str(x_coord + 1) + ',' + str(y_coord + 1)
+    bottem_mid = str(x_coord) + ',' + str(y_coord + 1)
+    left_bottem_corner = str(x_coord - 1) + ',' + str(y_coord + 1)
+    left = str(x_coord - 1) + ',' + str(y_coord)
+    surrounding_list = (left_top_corner, top_mid, right_top_corner, right, right_bottom_corner, bottem_mid, left_bottem_corner, left)
+    print(f'Serrounding coordinates = {surrounding_list}')
+    for coord_surr in surrounding_list:
+        for key in coord_dict_numbers:
+            key_list = key.split('|')
+            for keys in key_list:
+                if coord_surr == keys:
+                    # print(f'Number = {coord_dict_numbers[key]} is added to the answer')
+                    answer_dict[key] = coord_dict_numbers[key]
+
+print(answer_dict)
+for answers in answer_dict.values():
+    answer += int(answers)
+
+print(answer)
+# 925
+
+
+
+
+
+
+
+
 
 
 
