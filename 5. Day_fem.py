@@ -90,10 +90,11 @@
 # What is the lowest location number that corresponds to any of the initial seed numbers?
 
 answer = 0
-score = 0
-file = open('Inputs/Day_5_test_input', 'r')
+score = list()
+file = open('Inputs/Day_5_input', 'r')
 line_list = file.readlines()
 
+seed_list_str = list()
 seed_list = list()
 seed_to_soil_started = False
 seed_to_soil_map = list()
@@ -111,13 +112,14 @@ humidity_to_location_map = list()
 
 while '\n' in line_list:
     line_list.remove('\n')
-print(line_list)
 
 for line in line_list:
     x = line.strip().split(' ')
 
     if x[0] == 'seeds:':
-        seed_list = x[1::]
+        seed_list_str = x[1::]
+        for seed in seed_list_str:
+            seed_list.append(int(seed))
 
     elif x[0] == 'seed-to-soil':
         seed_to_soil_started = True
@@ -166,17 +168,148 @@ for line in line_list:
     else:
         humidity_to_location_map.append(x)
 
+seed_to_soil_list = list()
+for mapping in seed_to_soil_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y1 = [start_source, end_source, offset]
+    seed_to_soil_list.append(y1)
+
+soil_to_fertilizer_list = list()
+for mapping in soil_to_fertilizer_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y2 = [start_source, end_source, offset]
+    soil_to_fertilizer_list.append(y2)
+
+fertilizer_to_water_list = list()
+for mapping in fertilizer_to_water_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y3 = [start_source, end_source, offset]
+    fertilizer_to_water_list.append(y3)
+
+water_to_light_list = list()
+for mapping in water_to_light_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y3 = [start_source, end_source, offset]
+    water_to_light_list.append(y3)
+
+light_to_temperature_list = list()
+for mapping in light_to_temperature_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y3 = [start_source, end_source, offset]
+    light_to_temperature_list.append(y3)
+
+temperature_to_humidity_list = list()
+for mapping in temperature_to_humidity_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y4 = [start_source, end_source, offset]
+    temperature_to_humidity_list.append(y4)
+
+humidity_to_location_list = list()
+for mapping in humidity_to_location_map:
+    destination = int(mapping[0])
+    source = int(mapping[1])
+    mapping_range = int(mapping[2])
+    start_source = source
+    end_source = source + (mapping_range -1)
+    offset = source - destination
+    y5 = [start_source, end_source, offset]
+    humidity_to_location_list.append(y5)
+
 print(f'''
 Seed list: {seed_list}
 Lists of all mappings:
-- 1. seed-to-soil: {seed_to_soil_map}
-- 2. soil-to-fertilizer: {soil_to_fertilizer_map}
-- 3. fertilizer_to_water: {fertilizer_to_water_map}
-- 4. water-to-light: {water_to_light_map}
-- 5. light-to-temperature: {light_to_temperature_map}
-- 6. temperature-to-humidity: {temperature_to_humidity_map}
-- 7. humidity-to-location: {humidity_to_location_map}
+- 1. seed-to-soil: {seed_to_soil_map}. Dict: {seed_to_soil_list}
+- 2. soil-to-fertilizer: {soil_to_fertilizer_map}. Dict: {soil_to_fertilizer_list}
+- 3. fertilizer_to_water: {fertilizer_to_water_map}. Dict: {fertilizer_to_water_list}
+- 4. water-to-light: {water_to_light_map}. Dict: {water_to_light_list}
+- 5. light-to-temperature: {light_to_temperature_map}. Dict: {light_to_temperature_list}
+- 6. temperature-to-humidity: {temperature_to_humidity_map}. Dict: {temperature_to_humidity_list}
+- 7. humidity-to-location: {humidity_to_location_map}. Dict: {humidity_to_location_list}
 ''')
-        
+found = False
+for seed in seed_list:
+    key = seed
+    for mapping in seed_to_soil_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
 
+    found = False
+    for mapping in soil_to_fertilizer_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
 
+    found = False
+    for mapping in fertilizer_to_water_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
+
+    found = False
+    for mapping in water_to_light_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
+
+    found = False
+    for mapping in light_to_temperature_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
+
+    found = False
+    for mapping in temperature_to_humidity_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
+
+    found = False
+    for mapping in humidity_to_location_list:
+        if mapping[0] <= key <= mapping[1] and not found:
+            key = (key - mapping[2])
+            found = True
+            continue
+
+    found = False
+    score.append(key)
+
+score.sort()
+print(score)
+print(score[0])
