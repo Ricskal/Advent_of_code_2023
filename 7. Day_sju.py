@@ -71,7 +71,7 @@ card_strength = {'A': '13',
 answer = 0
 
 cards_list = list()
-file = open('Inputs/Day_7_test_input', 'r')
+file = open('Inputs/Day_7_input', 'r')
 line_list = file.readlines()
 for line in line_list:
     line = line.split(' ')
@@ -147,9 +147,11 @@ for x in cards_list:
     print(f'The hand: {hand} is a: "High card". With a score of: {int(x[2]):,}')
 
     card_dict.clear()
-print(cards_list)
 
+sorted_list = sorted(cards_list, key=lambda z: z[2])
+for slist in sorted_list:
+    slist.append(sorted_list.index(slist) + 1)
+    answer += (slist[1] * slist[3])
 
-
-# One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
-
+print(sorted_list)
+print(answer)
