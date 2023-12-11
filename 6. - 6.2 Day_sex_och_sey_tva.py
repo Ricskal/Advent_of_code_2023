@@ -44,12 +44,51 @@
 #
 # Determine the number of ways you could beat the record in each race. What do you get if you multiply these numbers together?
 
+import math
 
-answer = 0
-file = open('Inputs/Day_5_input', 'r')
+distance_list = list()
+answer = list()
+file = open('Inputs/Day_6_input', 'r')
 line_list = file.readlines()
+x = list()
+time_distance_dict = {}
 
-while '\n' in line_list:
-    line_list.remove('\n')
-
+# File parsing
 for line in line_list:
+    line = line.split(' ')
+    line = list(filter(None, line))
+    line = line[1::]
+    x.append(line)
+i = 0
+print(x)
+for y, z in x, x:
+    while i < len(y):
+        time_distance_dict[int(y[i])] = int(z[i])
+        i += 1
+print(time_distance_dict)
+
+# time_remaining (max time - time_hold) * speed (time_hold) = distance
+score = list()
+for key in time_distance_dict.keys():
+    time_hold = 0
+    max_time_hold = math.trunc(key / 2)
+    while time_hold <= max_time_hold:
+        time_remaining = key - time_hold
+        speed = time_hold
+        distance = time_remaining * speed
+        if distance > time_distance_dict[key]:
+            distance_list.append(distance)
+        time_hold += 1
+    if key % 2 != 0:
+        answer.append((len(distance_list) * 2))
+    else:
+        answer.append((len(distance_list) * 2) - 1)
+    distance_list.clear()
+
+j = 1
+for entry in answer:
+    j = j * entry
+print(j)
+
+
+
