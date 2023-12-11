@@ -55,10 +55,101 @@
 # Find the rank of every hand in your set. What are the total winnings?
 
 
+card_strength = {'A': '13',
+                 'K': '12',
+                 'Q': '11',
+                 'J': '10',
+                 'T': '09',
+                 '9': '08',
+                 '8': '07',
+                 '7': '06',
+                 '6': '05',
+                 '5': '05',
+                 '4': '03',
+                 '3': '02',
+                 '2': '01'}
 answer = 0
-score = list()
-file = open('Inputs/Day_5_input', 'r')
-line_list = file.readlines()
 
+cards_list = list()
+file = open('Inputs/Day_7_test_input', 'r')
+line_list = file.readlines()
 for line in line_list:
-    print(line)
+    line = line.split(' ')
+    cards_list.append([line[0], int(line[1].strip())])
+
+# Convert initial cards to number
+hand_int = ''
+for x in cards_list:
+    hand = x[0]
+    for cards in hand:
+        hand_int = hand_int + card_strength[cards]
+    x.append(hand_int)
+    hand_int = ''
+
+
+for x in cards_list:
+    hand = x[0]
+
+    # Count cards
+    card_dict = {}
+    for card in hand:
+        if card not in card_dict.keys():
+            card_dict[card] = 1
+        else:
+            card_dict[card] = card_dict[card] + 1
+
+    # Five of a kind, where all five cards have the same label: AAAAA
+    if 5 in card_dict.values():
+        x[2] = '7' + x[2]
+        print(f'The hand: {hand} is a: "Five of a kind". With a score of: {int(x[2]):,}')
+        continue
+
+    # Four of a kind, where four cards have the same label and one card has a different label: AA8AA
+    if 4 in card_dict.values():
+        x[2] = '6' + x[2]
+        print(f'The hand: {hand} is a: "Four of a kind". With a score of: {int(x[2]):,}')
+        continue
+
+    # Full house, where three cards have the same label, and the remaining two cards share a different label: 23332
+    if all(y in card_dict.values() for y in (2, 3)):
+        x[2] = '5' + x[2]
+        print(f'The hand: {hand} is a: "Full house". With a score of: {int(x[2]):,}')
+        continue
+
+    # Three of a kind, where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
+    if 3 in card_dict.values():
+        x[2] = '4' + x[2]
+        print(f'The hand: {hand} is a: "Three of a kind". With a score of: {int(x[2]):,}')
+        continue
+
+    # Two pair, where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
+    two_pair = False
+    if 2 in card_dict.values():
+        first_pair = False
+        for card_key in card_dict.keys():
+            if card_dict[card_key] == 2 and not first_pair:
+                first_pair = True
+            elif card_dict[card_key] == 2 and first_pair:
+                x[2] = '3' + x[2]
+                two_pair = True
+                print(f'The hand: {hand} is a: "Two pair". With a score of: {int(x[2]):,}')
+                continue
+        if two_pair: continue
+
+    # One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
+    if 2 in card_dict.values():
+        x[2] = '2' + x[2]
+        print(f'The hand: {hand} is a: "One pair". With a score of: {int(x[2]):,}')
+        continue
+
+    # High card, where all cards' labels are distinct: 23456
+    x[2] = '1' + x[2]
+    print(f'The hand: {hand} is a: "High card". With a score of: {int(x[2]):,}')
+
+    card_dict.clear()
+print(cards_list)
+
+
+
+# One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
+
