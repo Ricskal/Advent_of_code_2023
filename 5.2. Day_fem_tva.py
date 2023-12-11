@@ -88,9 +88,25 @@
 # So, the lowest location number in this example is 35.
 #
 # What is the lowest location number that corresponds to any of the initial seed numbers?
+#
+# Everyone will starve if you only plant such a small number of seeds. Re-reading the almanac, it looks like the seeds: line actually describes ranges of seed numbers.
+#
+# The values on the initial seeds: line come in pairs. Within each pair, the first value is the start of the range and the second value is the length of the range. So, in the first line of the example above:
+#
+# seeds: 79 14 55 13
+#
+# This line describes two ranges of seed numbers to be planted in the garden. The first range starts with seed number 79 and contains 14 values: 79, 80, ..., 91, 92. The second range starts with seed number 55 and contains 13 values: 55, 56, ..., 66, 67.
+#
+# Now, rather than considering four seed numbers, you need to consider a total of 27 seed numbers.
+#
+# In the above example, the lowest location number can be obtained from seed number 82, which corresponds to soil 84, fertilizer 84, water 84, light 77, temperature 45, humidity 46, and location 46. So, the lowest location number is 46.
+#
+# Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
 
-answer = 0
-score = list()
+import datetime
+now = datetime.datetime.now()
+
+answer = 9999999999999999
 file = open('Inputs/Day_5_input', 'r')
 line_list = file.readlines()
 
@@ -113,13 +129,20 @@ humidity_to_location_map = list()
 while '\n' in line_list:
     line_list.remove('\n')
 
+part1, part2 = '', ''
+
 for line in line_list:
     x = line.strip().split(' ')
 
     if x[0] == 'seeds:':
         seed_list_str = x[1::]
         for seed in seed_list_str:
-            seed_list.append(int(seed))
+            if part1 == '':
+                part1 = int(seed)
+            else:
+                part2 = int(seed)
+                seed_list.append([part1, part2])
+                part1, part2 = '', ''
 
     elif x[0] == 'seed-to-soil':
         seed_to_soil_started = True
@@ -246,6 +269,7 @@ for mapping in humidity_to_location_map:
     humidity_to_location_list.append(y5)
 
 print(f'''
+Time: {now}
 Seed list: {seed_list}
 Lists of all mappings:
 - 1. seed-to-soil: {seed_to_soil_map}. Dict: {seed_to_soil_list}
@@ -256,60 +280,66 @@ Lists of all mappings:
 - 6. temperature-to-humidity: {temperature_to_humidity_map}. Dict: {temperature_to_humidity_list}
 - 7. humidity-to-location: {humidity_to_location_map}. Dict: {humidity_to_location_list}
 ''')
+
+i = 0
 found = False
 for seed in seed_list:
-    key = seed
-    for mapping in seed_to_soil_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+    i = 0
+    while i < seed[1]:
+        key = seed[0] + i
+        for mapping in seed_to_soil_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in soil_to_fertilizer_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in soil_to_fertilizer_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in fertilizer_to_water_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in fertilizer_to_water_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in water_to_light_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in water_to_light_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in light_to_temperature_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in light_to_temperature_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in temperature_to_humidity_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in temperature_to_humidity_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    for mapping in humidity_to_location_list:
-        if mapping[0] <= key <= mapping[1] and not found:
-            key = (key - mapping[2])
-            found = True
-            continue
+        found = False
+        for mapping in humidity_to_location_list:
+            if mapping[0] <= key <= mapping[1] and not found:
+                key = (key - mapping[2])
+                found = True
+                continue
 
-    found = False
-    score.append(key)
+        found = False
+        if key < answer:
+            # print(f'The answer was {answer} and now will be {key}', file = file_output)
+            answer = key
+        i += 1
 
-score.sort()
-print(score)
-print(score[0])
+then = datetime.datetime.now()
+print(f'Lowest number = {answer}. Calculated in {then - now}')
