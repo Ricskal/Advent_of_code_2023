@@ -81,21 +81,21 @@
 card_strength = {'A': '13',
                  'K': '12',
                  'Q': '11',
-                 'J': '10',
-                 'T': '09',
-                 '9': '08',
-                 '8': '07',
-                 '7': '06',
-                 '6': '05',
-                 '5': '04',
-                 '4': '03',
-                 '3': '02',
-                 '2': '01'}
+                 'T': '10',
+                 '9': '09',
+                 '8': '08',
+                 '7': '07',
+                 '6': '06',
+                 '5': '05',
+                 '4': '04',
+                 '3': '03',
+                 '2': '02',
+                 'J': '01'}
 answer = 0
 
 cards_list = list()
+# file = open('Inputs/Day_7_input', 'r')
 file = open('Inputs/Day_7_input', 'r')
-# file = open('Inputs/Day_7_test_input', 'r')
 line_list = file.readlines()
 for line in line_list:
     line = line.split(' ')
@@ -121,6 +121,13 @@ for x in cards_list:
             card_dict[card] = 1
         else:
             card_dict[card] = card_dict[card] + 1
+
+    if 'J' in card_dict.keys() and card_dict['J'] != 5:
+        sorted_card_dict = dict(sorted(card_dict.items(), key=lambda l: l[1]))
+        sorted_card_dict.pop('J')
+        first_key = list(sorted_card_dict.keys())[-1]
+        card_dict[first_key] = card_dict[first_key] + card_dict['J']
+        card_dict.pop('J')
 
     # Five of a kind, where all five cards have the same label: AAAAA
     if 5 in card_dict.values():
