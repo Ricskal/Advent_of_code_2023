@@ -33,11 +33,56 @@
 # Starting at AAA, follow the left/right instructions. How many steps are required to reach ZZZ?
 
 answer = 0
+# file = 'Inputs/Day_8_test_input'  # test
+file = 'Inputs/Day_8_input'  # prod
 
-cards_list = list()
-file = open('Inputs/Day_8_test_input', 'r')
-# file = open('Inputs/Day_8_input', 'r')
-line_list = file.readlines()
-for line in line_list:
-    line = line.split(' ')
-    cards_list.append([line[0], int(line[1].strip())])
+# Purge empty lines and fill list.
+with open(file, 'r') as reader, open(file, 'r+') as writer:
+    for line in reader:
+        if line.strip():
+            writer.write(line)
+    writer.truncate()
+
+with open(file, 'r') as reader:
+    line_list = reader.readlines()
+
+directions_list = list()
+node_dict = {}
+for l in line_list:
+    if len(directions_list) == 0:
+        directions_list = list(l.strip().replace('L', '0').replace('R', '1'))
+    else:
+        l = l.replace(' = ', ',').replace('(','').replace(')','').replace(', ', ',').strip().split(',')
+        node_dict[l[0]] = [l[1], l[2]]
+print(f'The node_dict: {node_dict}')
+print(f'The directions: {directions_list}')
+
+destination_location = 'AAA'
+nr_directions = len(directions_list) - 1
+direction = directions_list[0]
+i = 0
+tries = 0
+
+# while current_location != 'ZZZ':
+while True:
+
+    if destination_location == 'ZZZ': break
+    else: tries += 1
+    origin_location_list = node_dict[destination_location]
+    origin_location = origin_location_list[int(direction)]
+    if i < nr_directions:
+        i += 1
+    else: i = 0
+    direction = directions_list[i]
+
+    if origin_location == 'ZZZ': break
+    else: tries += 1
+    destination_location_list = node_dict[origin_location]
+    destination_location = destination_location_list[int(direction)]
+    if i < nr_directions:
+        i += 1
+    else: i = 0
+    direction = directions_list[i]
+
+print(tries)
+# 16697
