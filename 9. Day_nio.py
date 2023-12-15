@@ -71,3 +71,55 @@
 # If you find the next value for each history in this example and add them together, you get 114.
 #
 # Analyze your OASIS report and extrapolate the next value for each history. What is the sum of these extrapolated values?
+
+answer = 0
+file = 'Inputs/Day_9_test_input'  # test
+# file = 'Inputs/Day_9_input'  # prod
+
+with open(file, 'r') as reader:
+    oasis_list = reader.readlines()
+
+print(oasis_list)
+
+diff_list = list()
+oasis_prediction = list()
+oasis_sum = 0
+for oasis in oasis_list:
+    oasis = oasis.split(' ')
+    oasis_prediction.append(oasis)
+    while True:
+        last_prediction = oasis_prediction[-1]
+        for prediction in last_prediction:
+            oasis_sum += int(prediction)
+        if oasis_sum == 0: break
+        oasis_sum = 0
+        for i in range(len(last_prediction)-1):
+            number1 = last_prediction[i]
+            number2 = last_prediction[i+1]
+            diff = (int(number2) - int(number1))
+            diff_list.append(diff)
+        oasis_prediction.append(diff_list[:])
+        diff_list.clear()
+    print(oasis_prediction)
+
+    oasis_prediction.reverse()
+    print(oasis_prediction)
+
+    for j in range(len(oasis_prediction)):
+        if j == 0:
+            oasis_prediction[j].append(0)
+            continue
+        h = int(oasis_prediction[j-1][-1])
+        k = int(oasis_prediction[j][-1])
+        oasis_prediction[j].append(h + k)
+        j += 1
+    
+    print(f'SCHEIDING {oasis_prediction}')
+
+
+
+
+
+
+
+
