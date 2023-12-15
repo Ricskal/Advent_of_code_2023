@@ -66,6 +66,8 @@
 #
 # Simultaneously start on every node that ends with A. How many steps does it take before you're only on nodes that end with Z?
 
+from math import lcm
+
 answer = 0
 # file = 'Inputs/Day_8_test_input'  # test
 file = 'Inputs/Day_8_input'  # prod
@@ -88,35 +90,48 @@ for l in line_list:
     else:
         l = l.replace(' = ', ',').replace('(','').replace(')','').replace(', ', ',').strip().split(',')
         node_dict[l[0]] = [l[1], l[2]]
+
+start_location_list = list()
+end_location_list = list()
+for key in node_dict:
+    if key[-1] == 'A':
+        start_location_list.append([key, '???', 0])
+    elif key[-1] == 'Z':
+        end_location_list.append(key)
+
 print(f'The node_dict: {node_dict}')
 print(f'The directions: {directions_list}')
+print(f'The starting locations: {start_location_list}')
+print(f'The ending locations: {end_location_list}')
 
-destination_location = 'AAA'
+def get_next_location(p_location, p_direction):
+    f_location_list = node_dict[p_location]
+    f_location = f_location_list[int(p_direction)]
+    return f_location
+
 nr_directions = len(directions_list) - 1
-direction = directions_list[0]
-i = 0
-tries = 0
+for location_list in start_location_list:
+    location = location_list[0]
+    i = 0
+    steps = 0
+    while True:
+        if location in end_location_list:
+            location_list[1] = steps
+            location_list[2] = location
+            break
+        if steps > nr_directions: i = steps % (nr_directions + 1)
+        else: i = steps
+        direction = directions_list[i]
+        steps += 1
+        location = get_next_location(location, direction)
+    print(location_list)
+print(start_location_list)
 
-# while current_location != 'ZZZ':
-while True:
+numbers = []
+for l in start_location_list:
+    numbers.append(l[1])
+numbers.sort()
 
-    if destination_location == 'ZZZ': break
-    else: tries += 1
-    origin_location_list = node_dict[destination_location]
-    origin_location = origin_location_list[int(direction)]
-    if i < nr_directions:
-        i += 1
-    else: i = 0
-    direction = directions_list[i]
-
-    if origin_location == 'ZZZ': break
-    else: tries += 1
-    destination_location_list = node_dict[origin_location]
-    destination_location = destination_location_list[int(direction)]
-    if i < nr_directions:
-        i += 1
-    else: i = 0
-    direction = directions_list[i]
-
-print(tries)
-# 16697
+print(numbers)
+x = lcm(20093, 12169, 13301, 20659, 16697, 17263)
+print(x)
