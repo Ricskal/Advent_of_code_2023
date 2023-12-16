@@ -73,26 +73,27 @@
 # Analyze your OASIS report and extrapolate the next value for each history. What is the sum of these extrapolated values?
 
 answer = 0
-file = 'Inputs/Day_9_test_input'  # test
-# file = 'Inputs/Day_9_input'  # prod
+score = 0
+# file = 'Inputs/Day_9_test_input'  # test
+file = 'Inputs/Day_9_input'  # prod
 
 with open(file, 'r') as reader:
     oasis_list = reader.readlines()
 
-print(oasis_list)
-
 diff_list = list()
 oasis_prediction = list()
-oasis_sum = 0
 for oasis in oasis_list:
+    oasis = oasis.strip()
     oasis = oasis.split(' ')
     oasis_prediction.append(oasis)
     while True:
         last_prediction = oasis_prediction[-1]
+        smallest_value = 0
+        biggest_value = 0
         for prediction in last_prediction:
-            oasis_sum += int(prediction)
-        if oasis_sum == 0: break
-        oasis_sum = 0
+            if int(prediction) < smallest_value: smallest_value = int(prediction)
+            if int(prediction) > biggest_value: biggest_value = int(prediction)
+        if smallest_value == 0 and biggest_value == 0: break
         for i in range(len(last_prediction)-1):
             number1 = last_prediction[i]
             number2 = last_prediction[i+1]
@@ -100,11 +101,8 @@ for oasis in oasis_list:
             diff_list.append(diff)
         oasis_prediction.append(diff_list[:])
         diff_list.clear()
-    print(oasis_prediction)
 
     oasis_prediction.reverse()
-    print(oasis_prediction)
-
     for j in range(len(oasis_prediction)):
         if j == 0:
             oasis_prediction[j].append(0)
@@ -113,13 +111,15 @@ for oasis in oasis_list:
         k = int(oasis_prediction[j][-1])
         oasis_prediction[j].append(h + k)
         j += 1
-    
-    print(f'SCHEIDING {oasis_prediction}')
 
+    for debug in oasis_prediction:
+        print(debug)
 
+    oasis_prediction.reverse()
+    score += oasis_prediction[0][-1]
+    print(f'List = {oasis_prediction[0]}. The answer was {answer}. it will be increased by {score}. The new answer {answer + score}')
+    answer += score
+    score = 0
+    oasis_prediction.clear()
 
-
-
-
-
-
+print(f'Final score {answer}')
