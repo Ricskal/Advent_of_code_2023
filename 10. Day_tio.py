@@ -105,10 +105,127 @@
 #
 # To begin, get your puzzle input.
 
-answer = 0
-score = 0
+import copy
+# Variables
+answer, score = 0, 0
 # file = 'Inputs/Day_10_test_input'  # test
 file = 'Inputs/Day_10_input'  # prod
+direction_options = {
+    'north': ['|', '7', 'F', 'S'],
+    'east':  ['-', '7', 'J', 'S'],
+    'south': ['|', 'J', 'L', 'S'],
+    'west':  ['-', 'L', 'F', 'S']
+}
+pipe_options = {
+    '|': ['north', 'south'],
+    '-': ['east', 'west'],
+    'L': ['north', 'east'],
+    'J': ['north', 'west'],
+    '7': ['south', 'west'],
+    'F': ['south', 'east'],
+    'S': ['north', 'east', 'south', 'west']
+}
 
+# Read file
 with open(file, 'r') as reader:
-    oasis_list = reader.readlines()
+    maze_list = reader.readlines()
+
+maze = list()
+for line in maze_list:
+    line = list(line.rstrip())
+    maze.append(line[:])
+
+def visualize_maze(maze_to_print):
+    maze_to_print = copy.deepcopy(maze_to_print)
+    # Add Y axis
+    y = 0
+    for rows in maze_to_print:
+        y_str = str(y)
+        rows.insert(0, y_str)
+        y += 1
+    # Add X axis
+    x = 0
+    x_axis = list('&')
+    for column in range(len(maze_to_print[0]) - 1):
+        x_str = str(x)
+        x_axis.append(x_str)
+        x += 1
+    maze_to_print.insert(0, x_axis)
+
+    row_print = list()
+    for rows in maze_to_print:
+        for char in rows:
+            char_print = char.replace('|', '║').replace('7','╗').replace('F','╔').replace('J','╝').replace('L','╚').replace('-','═').replace('S','╬')
+            row_print.append(char_print)
+        print(*row_print,sep =' ')
+        row_print.clear()
+    maze_to_print.clear()
+    x_axis.clear()
+
+visualize_maze(maze)
+
+# Find start
+def find_start():
+    start_x = 0
+    start_y = 0
+    for row in maze:
+        if 'S' in row:
+            start_x = row.index('S')
+            break
+        start_y += 1
+    f_start_location = ['S', [start_x, start_y], [-1, -1]]
+    return f_start_location
+
+# Find points around location
+def possible_ways(p_location):
+    tunnel_piece = p_location[0]
+    f_location = p_location[1]
+    old_location = p_location[2]
+    new_locations = list()
+    # Scout locations
+    if 'north' in pipe_options[tunnel_piece]:
+        north = [maze[f_location[1] - 1][f_location[0]], [f_location[0], f_location[1] - 1]]
+        if (            north[0] != '.'
+                    and [f_location[0], f_location[1] - 1] != old_location
+        ):
+            new_locations.append(north)
+    if 'east' in pipe_options[tunnel_piece]:
+        east =  [maze[f_location[1]][f_location[0] + 1], [f_location[0] + 1, f_location[1]]]
+        if (        east[0] != '.'
+                and [f_location[0] + 1, f_location[1]] != old_location
+        ):
+            new_locations.append(east)
+    if 'south' in pipe_options[tunnel_piece]:
+        south = [maze[f_location[1] + 1][f_location[0]], [f_location[0], f_location[1] + 1]]
+        if (
+                    south[0] != '.'
+                and [f_location[0], f_location[1] + 1] != old_location
+        ):
+            new_locations.append(south)
+    if 'west' in pipe_options[tunnel_piece]:
+        west =  [maze[f_location[1]][f_location[0] - 1], [f_location[0] - 1, f_location[1]]]
+        if (
+                    west[0] != '.'
+                and [f_location[0] - 1, f_location[1]] != old_location
+        ):
+            new_locations.append(west)
+
+    new_locations = new_locations[0]
+    new_locations.append(f_location) # the new old location
+    return new_locations
+
+start_location = find_start()
+print(f'Starting point: X, Y = {start_location[1]}')
+
+location = possible_ways(start_location)
+print(f'Possible ways: {location}')
+
+# Move to new location
+step = 0
+while True:
+    if location[0] == 'S': break
+    location = possible_ways(location)
+    step += 1
+
+answer = int(step / 2) + (step % 2 > 0)
+print(f'Number of total steps: {step}. Devided by 2 rounded up {answer}')
